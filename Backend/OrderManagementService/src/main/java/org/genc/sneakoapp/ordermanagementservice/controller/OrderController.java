@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/order-service/order")
 @RequiredArgsConstructor
@@ -35,5 +37,12 @@ public class OrderController {
     public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
         return new ResponseEntity<>(orderService.findOrderById(id), HttpStatus.OK);
     }
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUserId(@PathVariable("id")  Long userId) {
+        List<OrderDTO> orders = orderService.findOrdersByUserId(userId);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
+
 
 }

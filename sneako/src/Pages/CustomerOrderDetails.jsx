@@ -1,4 +1,3 @@
-// components/CustomerOrderDetails.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -14,18 +13,27 @@ function CustomerOrderDetails() {
       try {
         setLoading(true);
         setError(null);
-        // Get userId from localStorage
+
         const storedUser = localStorage.getItem("user");
-        const userId = storedUser ? JSON.parse(storedUser).id : null;
-        if (!userId) {
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+        const userId = parsedUser?.id;
+        const token = parsedUser?.jwt;
+
+        if (!userId || !token) {
           setError("User not logged in.");
           setLoading(false);
           return;
         }
-        // Fetch orders for the specific user from backend
+
         const response = await axios.get(
-          `http://localhost:8085/api/v1/order-service/orders?userId=${userId}`
+          `http://localhost:8081/api/v1/order-service/order/user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         setOrders(response.data);
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -39,8 +47,7 @@ function CustomerOrderDetails() {
   }, []);
 
   const handleTrackOrder = (order) => {
-    // Navigate to the OrderTracking page, passing the order data in state
-    navigate(`/order-tracking/${order.id}`, { state: { order } });
+    navigate(`/order-tracking/${order.orderId}`, { state: { order } });
   };
 
   if (loading) {
@@ -68,12 +75,12 @@ function CustomerOrderDetails() {
       <div className="space-y-6">
         {orders.map((order) => (
           <div
-            key={order.id}
+            key={order.orderId}
             className="border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
           >
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
               <div className="mb-2 md:mb-0">
-                <p className="font-bold text-lg">Order ID: {order.id}</p>
+                <p className="font-bold text-lg">Order ID: {order.orderId}</p>
                 <p className="text-sm text-gray-600">
                   Date: {new Date(order.orderDate).toLocaleDateString()}
                 </p>
@@ -84,23 +91,23 @@ function CustomerOrderDetails() {
                 </p>
                 <p
                   className={`font-semibold text-sm ${
-                    order.status === "Delivered"
+                    order.orderStatus === "Delivered"
                       ? "text-green-600"
                       : "text-orange-500"
                   }`}
                 >
-                  Status: {order.status}
+                  Status: {order.orderStatus}
                 </p>
               </div>
             </div>
             <hr className="my-4" />
             <div className="space-y-4">
-              {order.products.map((item, index) => (
+              {order.orderItems.map((item, index) => (
                 <div key={index} className="flex items-center space-x-4">
                   <div className="flex-grow">
-                    <p className="font-medium">{item.name}</p>
+                    <p className="font-medium">Product ID: {item.productId}</p>
                     <p className="text-sm text-gray-500">
-                      Quantity: {item.quantity} | Price: ₹{item.price}
+                      Quantity: {item.quantity} | Price: ₹{item.totalPrice}
                     </p>
                   </div>
                 </div>
@@ -122,3 +129,5 @@ function CustomerOrderDetails() {
 }
 
 export default CustomerOrderDetails;
+
+ 

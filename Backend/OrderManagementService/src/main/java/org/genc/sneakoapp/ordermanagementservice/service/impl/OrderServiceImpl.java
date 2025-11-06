@@ -196,6 +196,16 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.count();
     }
 
+    @Override
+    public List<OrderDTO> findOrdersByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream()
+                .map(this::mapProductEntityDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
 
 
 }
