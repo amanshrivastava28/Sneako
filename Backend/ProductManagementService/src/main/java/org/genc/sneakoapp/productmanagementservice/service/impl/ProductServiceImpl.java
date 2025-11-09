@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -105,4 +107,20 @@ public class ProductServiceImpl implements ProductService {
         productObj.setCategory(categoryEntity);
         return productObj;
     }
+    @Override
+    @Transactional
+    public void reduceStock(Long productId, Long quantity) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
+        Long currentStock = product.getStockQuantity();
+        if (currentStock == null || currentStock < quantity) {
+            throw new RuntimeException("Insufficient stock for product ID: " + productId);
+        }
+
+        product.setStockQuantity(currentStock - quantity);
+        product.setUpdatedBy("FRONTEND");
+        productRepository.save(product);
+    }
+
 }

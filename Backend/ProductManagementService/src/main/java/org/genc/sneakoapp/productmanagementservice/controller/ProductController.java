@@ -61,5 +61,12 @@ public class ProductController {
     public ResponseEntity<ProductDTO>  findById( @PathVariable  Long id){
         return new ResponseEntity<>(productService.findById(id),HttpStatus.OK);
     }
+    
+    @PatchMapping("/{id}/stock")
+    public ResponseEntity<Void> reduceStock(@PathVariable Long id, @RequestParam Long quantity) {
+        productService.reduceStock(id, quantity);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

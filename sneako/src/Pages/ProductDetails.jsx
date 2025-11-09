@@ -78,16 +78,62 @@ function ProductDetails() {
   }
 };
 
-  const handleBuyNow = () => {
-    if (!selectedSize) {
-      setMessage('Please select a size to proceed with "Buy Now".');
-      setTimeout(() => setMessage(""), 3000);
+ const handleBuyNow = async () => {
+  if (!selectedSize) {
+    setMessage('Please select a size to proceed with "Buy Now".');
+    setTimeout(() => setMessage(""), 3000);
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.jwt;
+
+  try {
+    // 1️⃣ Fetch current stock
+    const res = await axios.get(
+      `http://localhost:8081/api/v1/product-service/product/${product.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const currentStock = res.data.stockQuantity;
+
+    // 2️⃣ Check stock
+    if (currentStock < 1) {
+      setMessage("Sorry, this product is out of stock.");
       return;
     }
+
+    // 3️⃣ Reduce stock by 1
+    await axios.patch(
+      `http://localhost:8081/api/v1/product-service/product/${product.id}/stock`,
+      null,
+      {
+        params: { quantity: 1 },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // 4️⃣ Proceed to checkout
     navigate("/checkout", {
-      state: { product, size: selectedSize, quantity: 1 },
+      state: {
+        product,
+        size: selectedSize,
+        quantity: 1,
+      },
     });
-  };
+  } catch (err) {
+    console.error("Error reducing stock or navigating:", err);
+    setMessage("Failed to proceed. Please try again.");
+  } finally {
+    setTimeout(() => setMessage(""), 3000);
+  }
+};
+
 
   if (loading) {
     return (

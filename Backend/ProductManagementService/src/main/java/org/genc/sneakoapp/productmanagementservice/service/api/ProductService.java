@@ -12,5 +12,7 @@ public interface ProductService {
     public void  deleteProduct(Long id);
     public ProductDTO findById(Long id);
     public Long totalProduct();
+    void reduceStock(Long productId, Long quantity);
+
 
 }

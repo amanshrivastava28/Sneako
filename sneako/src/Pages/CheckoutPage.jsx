@@ -96,7 +96,7 @@ function CheckoutPage() {
 if (!product && cartItems?.length > 0) {
   await Promise.all(
     cartItems.map(item =>
-      axios.delete(`http://localhost:8085/api/v1/cart-service/cart-items/${item.cartItemId}`, {
+      axios.delete(`http://localhost:8081/api/v1/cart-service/cart-item/${item.cartItemId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
     )
