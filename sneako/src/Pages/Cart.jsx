@@ -144,26 +144,64 @@ function Cart() {
     }
   };
 
-const handlePlaceOrder = () => {
-  if (cartItems.length > 0) {
+const handlePlaceOrder = async () => {
+  if (cartItems.length === 0) return;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user.jwt;
+
+  try {
+    for (const item of cartItems) {
+      // 1️⃣ Fetch current stock
+      const productRes = await axios.get(
+        `http://localhost:8081/api/v1/product-service/product/${item.productId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const currentStock = productRes.data.stockQuantity;
+
+      // 2️⃣ Calculate new stock
+      const newStock = currentStock - item.quantity;
+      if (newStock < 0) {
+        alert(`Insufficient stock for ${item.name}`);
+        return;
+      }
+
+      // 3️⃣ Update stock
+      await axios.patch(
+        `http://localhost:8081/api/v1/product-service/product/${item.productId}/stock`,
+        null,
+        {
+          params: { quantity: item.quantity },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    }
+
+    // ✅ Proceed to checkout
     const enrichedItems = cartItems.map(item => ({
-      cartItemId: item.cartItemId, // ✅ needed for deletion
+      cartItemId: item.cartItemId,
       productId: item.productId,
       quantity: item.quantity,
       unitPrice: item.originalPrice,
       totalPrice: item.originalPrice * item.quantity,
       size: item.size || 10,
-      name: item.name
+      name: item.name,
     }));
 
     navigate("/checkout", {
       state: {
         cartItems: enrichedItems,
-        total: enrichedItems.reduce((sum, item) => sum + item.totalPrice, 0)
-      }
+        total: enrichedItems.reduce((sum, item) => sum + item.totalPrice, 0),
+      },
     });
+  } catch (error) {
+    console.error("Error placing order:", error);
+    alert("Failed to place order due to stock or server issue.");
   }
 };
+
 
 
   return (
