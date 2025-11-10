@@ -17,6 +17,31 @@ function Navbar() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isUserReady, setIsUserReady] = useState(false); 
+  const [categories, setCategories] = useState([]);
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = user?.jwt;
+
+      const res = await axios.get("http://localhost:8081/api/v1/product-service/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCategories(res.data);
+    } catch (error) {
+      console.error("Failed to fetch categories in Navbar:", error);
+    }
+  };
+
+  if (user?.jwt) {
+    fetchCategories();
+  }
+}, [user]);
+
 
 
   useEffect(() => {
@@ -185,59 +210,38 @@ useEffect(() => {
             <Link to="/cart" className="hover:underline">
               Cart
             </Link>
-            {!isCartPage && (
-              <div className="relative group cursor-pointer">
-                <span className="hover:underline">Categories</span>
-                <div className="absolute left-0 mt-0 w-48 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", { detail: "All" })
-                      )
-                    }
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Running Shoes",
-                        })
-                      )
-                    }
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Running Shoes
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Casual Shoes",
-                        })
-                      )
-                    }
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Casual Shoes
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Skate Shoes",
-                        })
-                      )
-                    }
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Skate Shoes
-                  </button>
-                </div>
-              </div>
-            )}
+{!isCartPage && (
+  <div className="relative group cursor-pointer">
+    <span className="hover:underline">Categories</span>
+    <div className="absolute left-0 mt-0 w-48 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
+      <button
+        onClick={() =>
+          window.dispatchEvent(
+            new CustomEvent("categorySelected", { detail: "All" })
+          )
+        }
+        className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded font-semibold text-white-300"
+      >
+        All Products
+      </button>
+      {categories.map((cat) => (
+        <button
+          key={cat.categoryID}
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent("categorySelected", { detail: cat.name })
+            )
+          }
+          className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
+        >
+          {cat.name}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+
+           
             <div className="relative group cursor-pointer">
               <span className="hover:underline">Profile</span>
               <div className="absolute right-0 mt-0 w-56 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
@@ -329,61 +333,37 @@ useEffect(() => {
               >
                 Cart
               </Link>
-              {!isCartPage && (
-                <div className="w-full">
-                  <span className="block font-semibold mb-1">Categories</span>
-                  <button
-                    onClick={() => {
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", { detail: "All" })
-                      );
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Running Shoes",
-                        })
-                      );
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Running Shoes
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Casual Shoes",
-                        })
-                      );
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Casual Shoes
-                  </button>
-                  <button
-                    onClick={() => {
-                      window.dispatchEvent(
-                        new CustomEvent("categorySelected", {
-                          detail: "Skate Shoes",
-                        })
-                      );
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-                  >
-                    Skate Shoes
-                  </button>
-                </div>
-              )}
+             {!isCartPage && (
+  <div className="relative group cursor-pointer">
+    <span className="hover:underline">Categories</span>
+    <div className="absolute left-0 mt-0 w-48 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
+      <button
+        onClick={() =>
+          window.dispatchEvent(
+            new CustomEvent("categorySelected", { detail: "All" })
+          )
+        }
+        className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded font-semibold text-white-300"
+      >
+        All Products
+      </button>
+      {categories.map((cat) => (
+        <button
+          key={cat.categoryID}
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent("categorySelected", { detail: cat.name })
+            )
+          }
+          className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
+        >
+          {cat.name}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+
               <Link
                 to="/profile"
                 className="w-full"
