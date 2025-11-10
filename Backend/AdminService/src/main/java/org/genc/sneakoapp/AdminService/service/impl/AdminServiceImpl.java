@@ -111,9 +111,10 @@ public class AdminServiceImpl implements AdminService {
         }
         if(productDTO.getCategoryName()!=null){
             category=findByCategoryEntityByName(productDTO.getCategoryName());
+            productEntity.setCategory(category);
         }
         Product perProduct=productRepository.save(productEntity);
-        return mapProductEntityDTO(productEntity);
+        return mapProductEntityDTO(perProduct);
     }
     @Override
     public void deleteProduct(Long id) {

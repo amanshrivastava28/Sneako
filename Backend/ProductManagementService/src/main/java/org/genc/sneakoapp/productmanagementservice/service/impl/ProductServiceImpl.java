@@ -37,31 +37,35 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Product productEntity=productRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("Product " +
-                "Not Found"));
-        Category category=null;
-        if(productDTO.getProductName()!=null){
+        Product productEntity = productRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Product Not Found"));
+
+        if (productDTO.getProductName() != null) {
             productEntity.setProductName(productDTO.getProductName());
         }
-        if(productDTO.getImageUrl()!=null){
+        if (productDTO.getImageUrl() != null) {
             productEntity.setImageUrl(productDTO.getImageUrl());
         }
-        if(productDTO.getDescription()!=null){
+        if (productDTO.getDescription() != null) {
             productEntity.setDescription(productDTO.getDescription());
         }
-        if(productDTO.getStockQuantity()!=null){
+        if (productDTO.getStockQuantity() != null) {
             productEntity.setStockQuantity(productDTO.getStockQuantity());
         }
-        if(productDTO.getPrice()!=null){
+        if (productDTO.getPrice() != null) {
             productEntity.setPrice(productDTO.getPrice());
         }
-        if(productDTO.getCategoryName()!=null){
-            category=categoryService.findByCategoryEntityByName(productDTO.getCategoryName());
+        if (productDTO.getCategoryName() != null) {
+            Category category = categoryService.findByCategoryEntityByName(productDTO.getCategoryName());
+            productEntity.setCategory(category); 
         }
-        Product perProduct=productRepository.save(productEntity);
-        return mapProductEntityDTO(productEntity);
+
+        Product updatedProduct = productRepository.save(productEntity);
+        log.info("Updated category to: {}", productEntity.getCategory().getName());
+
+        return mapProductEntityDTO(updatedProduct);
     }
+
 
     @Override
     public void deleteProduct(Long id) {

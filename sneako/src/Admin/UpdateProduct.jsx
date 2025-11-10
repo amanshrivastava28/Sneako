@@ -19,7 +19,9 @@ const UpdateProduct = () => {
   });
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
+  const [categories, setCategories] = useState([]);
 
+  // Load product
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.jwt;
@@ -34,7 +36,6 @@ const UpdateProduct = () => {
             },
           }
         );
-        console.log("Fetched product:", response.data);
         setProduct(response.data);
         setLoading(false);
       } catch (error) {
@@ -44,6 +45,44 @@ const UpdateProduct = () => {
     };
     loadProduct();
   }, [id]);
+
+  // Load categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = user?.jwt;
+
+        const res = await axios.get("http://localhost:8081/api/v1/product-service/categories", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setCategories(res.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Normalize categoryName to match one of the loaded categories
+  useEffect(() => {
+  if (categories.length > 0 && product.categoryName === "") {
+    const match = categories.find(
+      (cat) => cat.name.toLowerCase() === product.categoryName.toLowerCase()
+    );
+    if (match) {
+      setProduct((prev) => ({ ...prev, categoryName: match.name }));
+    } else {
+      // fallback to first category if no match
+      setProduct((prev) => ({ ...prev, categoryName: categories[0].name }));
+    }
+  }
+}, [categories, product.categoryName]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,11 +95,14 @@ const UpdateProduct = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       const token = user?.jwt;
 
+
       const updatedProduct = {
         ...product,
         price: Number(product.price),
         stockQuantity: Number(product.stockQuantity),
       };
+
+        console.log("Submitting product:", updatedProduct);
 
       const response = await axios.put(
         `http://localhost:8081/api/v1/analytics-service/admin/product/${id}`,
@@ -102,7 +144,6 @@ const UpdateProduct = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
-
       <div className="flex-grow">
         {successMessage && (
           <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center space-x-3 transition duration-300">
@@ -149,14 +190,22 @@ const UpdateProduct = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Category
                 </label>
-                <input
-                  type="text"
+                <select
                   name="categoryName"
                   value={product.categoryName}
                   onChange={handleChange}
                   className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
                   required
-                />
+                >
+                  <option value="" disabled>
+                    Select a category
+                  </option>
+                  {categories.map((cat) => (
+                    <option key={cat.categoryID} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
