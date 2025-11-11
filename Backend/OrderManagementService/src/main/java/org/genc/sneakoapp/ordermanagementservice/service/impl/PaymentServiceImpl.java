@@ -24,11 +24,12 @@ public class PaymentServiceImpl implements PaymentService {
         paymentEntity.setPaymentDate(paymentDTO.getPaymentDate());
         paymentEntity.setPaymentMethod(paymentDTO.getPaymentMethod());
         paymentEntity.setTransactionId(paymentDTO.getTransactionId());
+        paymentEntity.setUserId(paymentDTO.getUserId());
 
         Payment paymentObj=paymentRepository.save(paymentEntity);
         log.info("New Category creted with the :{}",paymentObj.getPaymentId());
         PaymentDTO responseDTO=new PaymentDTO(paymentObj.getPaymentId(),paymentObj.getOrderId(),
-                paymentObj.getTransactionId(),paymentObj.getPaymentMethod(),paymentObj.getPaymentDate());
+                paymentObj.getTransactionId(),paymentObj.getPaymentMethod(),paymentObj.getPaymentDate(),paymentObj.getUserId());
         return responseDTO;
     }
 }
