@@ -83,6 +83,7 @@ function CheckoutPage() {
 
       // 3️⃣ Create Payment
       await axios.post("http://localhost:8081/api/v1/order-service/payment", {
+        userId: user.id,
         orderId: order.orderId,
         transactionId: `TXN-${Date.now()}`,
         paymentMethod: paymentType,

@@ -103,7 +103,7 @@ function Login() {
                 className="w-full border border-gray-600 bg-transparent rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
               >
                 <option value="ROLE_CUSTOMER" className="text-black">Customer</option>
-                <option value="ROLE_ADMIN" className="text-black">Admin</option>
+                <option value="ROLE_ADMIN" className="text-black">Seller</option>
               </select>
             </div>
 

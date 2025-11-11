@@ -28,4 +28,6 @@ public class Payment {
 
     private String paymentDate;
 
+    private Long userId;
+
 }
