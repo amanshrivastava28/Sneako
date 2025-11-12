@@ -12,7 +12,6 @@ function Cart() {
 
  
 
-  // ✅ Move fetchItems here
   const fetchItems = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const userId = user.id;
@@ -61,7 +60,6 @@ function Cart() {
     }
   };
 
-  // ✅ Now this works
   useEffect(() => {
     fetchItems();
   }, []);
@@ -97,8 +95,7 @@ function Cart() {
       },
     });
 
-    // Optionally re-fetch cart to sync
-    fetchItems(); // if fetchItems is accessible here
+    fetchItems(); 
   } catch (error) {
     console.error("Error updating item quantity:", error);
   }
@@ -152,7 +149,7 @@ const handlePlaceOrder = async () => {
 
   try {
     for (const item of cartItems) {
-      // 1️⃣ Fetch current stock
+      //  Fetch current stock
       const productRes = await axios.get(
         `http://localhost:8081/api/v1/product-service/product/${item.productId}`,
         {
@@ -161,14 +158,14 @@ const handlePlaceOrder = async () => {
       );
       const currentStock = productRes.data.stockQuantity;
 
-      // 2️⃣ Calculate new stock
+      //  Calculate new stock
       const newStock = currentStock - item.quantity;
       if (newStock < 0) {
         alert(`Insufficient stock for ${item.name}`);
         return;
       }
 
-      // 3️⃣ Update stock
+      //  Update stock
       await axios.patch(
         `http://localhost:8081/api/v1/product-service/product/${item.productId}/stock`,
         null,
@@ -179,7 +176,7 @@ const handlePlaceOrder = async () => {
       );
     }
 
-    // ✅ Proceed to checkout
+    //  Proceed to checkout
     const enrichedItems = cartItems.map(item => ({
       cartItemId: item.cartItemId,
       productId: item.productId,

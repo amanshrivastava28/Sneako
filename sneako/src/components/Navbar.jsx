@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaHome, FaShoppingCart, FaUser } from "react-icons/fa";
+
 
 function Navbar() {
   const location = useLocation();
@@ -156,7 +158,7 @@ useEffect(() => {
         </button>
       </div>
       {/* Desktop Nav */}
-      <div className="hidden md:flex flex-1 items-center justify-end space-x-8">
+      <div className="hidden md:flex flex-1 items-center justify-start space-x-10">
         {user && (user.role === "ROLE_ADMIN" || user.role === "seller") && (
           <>
             <Link to="/admin">
@@ -184,86 +186,96 @@ useEffect(() => {
             </div>
           </>
         )}
-        {user && (user.role === "ROLE_CUSTOMER" || !user.role) && (
-          <>
-            <form
-              onSubmit={handleSearchSubmit}
-              className="flex items-center space-x-2"
-            >
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="border rounded px-2 py-1 text-black bg-white"
-              />
-              <button
-                type="submit"
-                className="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600"
-              >
-                Search
-              </button>
-            </form>
-            <Link to="/home" className="hover:underline">
-              Home
-            </Link>
-            <Link to="/cart" className="hover:underline">
-              Cart
-            </Link>
-{!isCartPage && (
-  <div className="relative group cursor-pointer">
-    <span className="hover:underline">Categories</span>
-    <div className="absolute left-0 mt-0 w-48 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
-      <button
-        onClick={() =>
-          window.dispatchEvent(
-            new CustomEvent("categorySelected", { detail: "All" })
-          )
-        }
-        className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded font-semibold text-white-300"
-      >
-        All Products
-      </button>
-      {categories.map((cat) => (
-        <button
-          key={cat.categoryID}
-          onClick={() =>
-            window.dispatchEvent(
-              new CustomEvent("categorySelected", { detail: cat.name })
-            )
-          }
-          className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
-        >
-          {cat.name}
-        </button>
-      ))}
-    </div>
-  </div>
-)}
 
-           
-            <div className="relative group cursor-pointer">
-              <span className="hover:underline">Profile</span>
-              <div className="absolute right-0 mt-0 w-56 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
-                <Link
-                  to="/profile"
-                  className="block px-3 py-2 rounded hover:bg-gray-700"
-                >
-                  <p className="font-semibold">{user.userId}</p>
-                </Link>
-                <button
-                  onClick={() => {
-                    localStorage.clear("user");
-                    navigate("/");
-                  }}
-                  className="w-full text-left px-3 py-2 rounded hover:bg-red-600"
-                >
-                  Log Out
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+{/* Desktop Nav */}
+  {user && (user.role === "ROLE_CUSTOMER" || !user.role) && (
+    <>
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex items-center space-x-2"
+      >
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="border rounded px-2 py-1 text-black bg-white"
+        />
+        <button
+          type="submit"
+          className="bg-gray-700 px-3 py-1 rounded hover:bg-gray-600"
+        >
+          Search
+        </button>
+      </form>
+
+      {/* Home Icon */}
+      <Link to="/home" className="hover:underline">
+        <FaHome size={22} />
+      </Link>
+
+      {/* Cart Icon */}
+      <Link to="/cart" className="hover:underline">
+        <FaShoppingCart size={22} />
+      </Link>
+
+      {/* Categories dropdown stays unchanged */}
+      {!isCartPage && (
+        <div className="relative group cursor-pointer">
+          <span className="hover:underline">Categories</span>
+          <div className="absolute left-0 mt-0 w-48 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
+            <button
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent("categorySelected", { detail: "All" })
+                )
+              }
+              className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded font-semibold text-white-300"
+            >
+              All Products
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.categoryID}
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent("categorySelected", { detail: cat.name })
+                  )
+                }
+                className="block w-full text-left px-4 py-2 hover:bg-gray-700 rounded"
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Profile Icon */}
+      <div className="relative group cursor-pointer">
+        <FaUser size={22} className="hover:underline" />
+        <div className="absolute right-0 mt-0 w-56 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
+          <Link
+            to="/profile"
+            className="block px-3 py-2 rounded hover:bg-gray-700"
+          >
+            <p className="font-semibold">{user.userId}</p>
+          </Link>
+          <button
+            onClick={() => {
+              localStorage.clear("user");
+              navigate("/");
+            }}
+            className="w-full text-left px-3 py-2 rounded hover:bg-red-600"
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
+    </>
+  )}
+
+
       </div>
       {/* Mobile Nav */}
       {mobileMenuOpen && (

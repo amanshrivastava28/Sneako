@@ -68,7 +68,6 @@ const UpdateProduct = () => {
     fetchCategories();
   }, []);
 
-  // Normalize categoryName to match one of the loaded categories
   useEffect(() => {
   if (categories.length > 0 && product.categoryName === "") {
     const match = categories.find(
@@ -77,7 +76,6 @@ const UpdateProduct = () => {
     if (match) {
       setProduct((prev) => ({ ...prev, categoryName: match.name }));
     } else {
-      // fallback to first category if no match
       setProduct((prev) => ({ ...prev, categoryName: categories[0].name }));
     }
   }

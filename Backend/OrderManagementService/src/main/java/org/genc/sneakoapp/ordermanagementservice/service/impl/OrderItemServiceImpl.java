@@ -90,7 +90,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         return items.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // ✅ Utility method to recalc order total
+    //  recalculate order total
     private void updateOrderTotal(Order order) {
         BigDecimal orderTotal = orderItemRepository.findByOrderOrderId(order.getOrderId())
                 .stream()

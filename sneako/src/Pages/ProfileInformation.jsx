@@ -15,7 +15,7 @@ function ProfileInformation() {
 
   useEffect(() => {
     const storedUserString = localStorage.getItem("user");
-    const parsedstoredUser = JSON.parse(storedUserString); // ✅ Parse it here
+    const parsedstoredUser = JSON.parse(storedUserString); 
     const token = parsedstoredUser.jwt;
 
  

@@ -14,7 +14,6 @@ function Home() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [success, setSuccess] = useState(false);
 
-  // Pagination state
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);

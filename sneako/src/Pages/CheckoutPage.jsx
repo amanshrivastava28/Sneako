@@ -55,7 +55,7 @@ function CheckoutPage() {
         return;
       }
 
-      // 1️⃣ Construct OrderDTO
+      //  Construct OrderDTO
     const orderPayload = {
   userId: user.id,
   shippingAddress: address,
@@ -72,7 +72,7 @@ function CheckoutPage() {
 
 
 
-      // 2️⃣ Create Order
+      //  Create Order
       const orderRes = await axios.post("http://localhost:8081/api/v1/order-service/order", orderPayload, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -81,7 +81,7 @@ function CheckoutPage() {
 
       const order = orderRes.data;
 
-      // 3️⃣ Create Payment
+      //  Create Payment
       await axios.post("http://localhost:8081/api/v1/order-service/payment", {
         userId: user.id,
         orderId: order.orderId,
@@ -93,7 +93,6 @@ function CheckoutPage() {
           Authorization: `Bearer ${token}`
         }
       });
-      // 🧹 Clear cart if this was a cart-based order
 if (!product && cartItems?.length > 0) {
   await Promise.all(
     cartItems.map(item =>
