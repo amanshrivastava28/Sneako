@@ -122,7 +122,7 @@ useEffect(() => {
 
   if (isLoginPage) {
     return (
-      <nav className="absolute top-0 w-full flex justify-between items-center px-4 py-4 text-white z-20 bg-black">
+      <nav className="fixed top-0 w-full flex justify-between items-center px-4 py-4 text-white z-20 bg-black">
         <Link to="/">
           <h1 className="text-2xl font-bold">Sneako</h1>
         </Link>
@@ -131,7 +131,7 @@ useEffect(() => {
   }
 
   return (
-    <nav className="absolute top-0 w-full flex items-center px-4 py-4 text-white z-20 bg-black">
+    <nav className="fixed top-0 w-full flex items-center px-4 py-4 text-white z-20 bg-black" >
       <div className="flex-1 flex items-center justify-between">
         <Link to={user ? "/home" : "/"}>
           <h1 className="text-2xl font-bold">Sneako</h1>
