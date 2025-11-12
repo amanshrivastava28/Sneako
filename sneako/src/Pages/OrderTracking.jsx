@@ -54,7 +54,6 @@ function OrderTracking() {
 
             const fetchedOrder = res.data;
 
-            // Optional: enrich with product images if needed
             const productRequests = fetchedOrder.orderItems.map(item =>
                 axios.get(`http://localhost:8081/api/v1/product-service/product/${item.productId}`, {
                     headers: { Authorization: `Bearer ${token}` }

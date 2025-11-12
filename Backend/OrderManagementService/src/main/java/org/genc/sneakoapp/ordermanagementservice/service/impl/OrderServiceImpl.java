@@ -29,7 +29,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderDTO createOrder(OrderDTO orderDTO) {
-        // 1️⃣ Save Order to generate ID
+        // Save Order to generate ID
         Order order = Order.builder()
                 .userId(orderDTO.getUserId())
                 .shippingAddress(orderDTO.getShippingAddress())
@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // 2️⃣ Validate and Save OrderItems
+        //  Validate and Save OrderItems
         if (orderDTO.getOrderItems() == null || orderDTO.getOrderItems().isEmpty()) {
             throw new RuntimeException("Order must contain at least one item.");
         }
@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderItemRepository.saveAll(orderItems);
 
-        // 3️⃣ Recalculate order total
+        //  Recalculate order total
         BigDecimal orderTotal = orderItems.stream()
                 .map(OrderItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -65,10 +65,10 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setTotalPrice(orderTotal);
         orderRepository.save(savedOrder);
 
-        // 4️⃣ Reload items to get generated IDs
+        //  Reload items to get generated IDs
         List<OrderItem> savedItems = orderItemRepository.findByOrderOrderId(savedOrder.getOrderId());
 
-        // 5️⃣ Construct DTO
+        //  Construct DTO
         List<OrderItemDTO> itemDTOs = savedItems.stream()
                 .map(item -> OrderItemDTO.builder()
                         .orderItemId(item.getOrderItemId())

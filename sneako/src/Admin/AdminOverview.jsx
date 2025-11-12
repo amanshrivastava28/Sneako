@@ -308,31 +308,6 @@ const AdminOverview = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="lg:col-span-1 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Alerts & Actions
-            </h2>
-
-            {statusItems.map((item, index) => (
-              <StatusActionCard
-                key={index}
-                label={item.label}
-                value={item.value}
-                bgColor={item.bgColor}
-                icon={item.icon}
-                color={item.color}
-              />
-            ))}
-
-            <StatusActionCard
-              label={"Manage Inventory"}
-              bgColor={"bg-blue-50"}
-              icon={<CogIcon_Simple />}
-              color={"text-blue-600"}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );
