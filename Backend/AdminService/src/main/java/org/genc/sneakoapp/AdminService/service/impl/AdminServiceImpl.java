@@ -56,7 +56,7 @@ public class AdminServiceImpl implements AdminService {
     public ProductDTO createProduct(ProductDTO productdto) {
         Product productEntity=getProductDetails(productdto);
         Product productObj=productRepository.save(productEntity);
-        log.info("created a Employee with the id:{}",productObj.getProductID());
+        log.info("created a Product with the id:{}",productObj.getProductID());
         return mapProductEntityDTO(productObj) ;
     }
 
