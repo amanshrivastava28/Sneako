@@ -33,6 +33,7 @@ function ProfileInformation() {
         })
         .then((res) => {
           const userData = res.data;
+          console.log("Fetched user data:", userData);
           setFormData({
             name: userData.username,
             phone: userData.phone || "",
@@ -147,7 +148,7 @@ const token = user.jwt;
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <p className="text-gray-500 text-sm">Full Name</p>
-            <p className="font-medium text-gray-800">{user.username}</p>
+            <p className="font-medium text-gray-800">{formData.name}</p>
           </div>
           <div>
             <p className="text-gray-500 text-sm">Email</p>

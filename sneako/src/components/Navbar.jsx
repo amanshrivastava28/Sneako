@@ -158,14 +158,14 @@ useEffect(() => {
         </button>
       </div>
       {/* Desktop Nav */}
-      <div className="hidden md:flex flex-1 items-center justify-start space-x-10">
+      <div className="hidden md:flex items-center justify-end space-x-10">
         {user && (user.role === "ROLE_ADMIN" || user.role === "seller") && (
           <>
             <Link to="/admin">
               <h1 className="font-bold">Admin Dashboard</h1>
             </Link>
             <div className="relative group cursor-pointer">
-              <span className="hover:underline">Profile</span>
+              <FaUser size={22} className="hover:underline" />
               <div className="absolute right-0 mt-0 w-56 bg-gray-900 text-white rounded-md shadow-lg p-2 hidden group-hover:block z-50">
                 <Link
                   to="/profile"
