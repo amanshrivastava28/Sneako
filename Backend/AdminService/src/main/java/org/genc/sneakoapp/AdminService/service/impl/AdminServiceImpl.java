@@ -4,26 +4,29 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.genc.sneakoapp.AdminService.dto.OrderDTO;
-import org.genc.sneakoapp.AdminService.dto.OrderItemDTO;
+
 import org.genc.sneakoapp.AdminService.dto.ProductDTO;
 import org.genc.sneakoapp.AdminService.dto.UserDetailsDTO;
-import org.genc.sneakoapp.AdminService.entity.Category;
-import org.genc.sneakoapp.AdminService.entity.Order;
-import org.genc.sneakoapp.AdminService.entity.Product;
-import org.genc.sneakoapp.AdminService.entity.User;
-import org.genc.sneakoapp.AdminService.enums.RoleType;
-import org.genc.sneakoapp.AdminService.repo.CategoryRepository;
-import org.genc.sneakoapp.AdminService.repo.OrderRepository;
-import org.genc.sneakoapp.AdminService.repo.ProductRepository;
-import org.genc.sneakoapp.AdminService.repo.UserRepository;
-import org.genc.sneakoapp.AdminService.service.api.AdminService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+
+
+
+
+
+import org.genc.sneakoapp.AdminService.service.api.AdminService;
+import org.genc.sneakoapp.AdminService.util.PageResponse;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -31,219 +34,188 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl implements AdminService {
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
+
+
+    private final RestTemplate restTemplate;
+
+    private final String PRODUCT_SERVICE_URL = "http://localhost:8095/api/v1/product-service/product";
+    private final String ORDER_SERVICE_URL = "http://localhost:8090/api/v1/order-service/order";
+    private final String USER_SERVICE_URL = "http://localhost:8092/api/v1/user-service/users";
+
+
 
     @Override
     public ProductDTO findById(Long id) {
-        Product product=productRepository.findById(id).orElseThrow(()->new RuntimeException("Not found"));
-        return mapProductEntityDTO(product);
+        String url = PRODUCT_SERVICE_URL + "/" + id;
+        return restTemplate.getForObject(url, ProductDTO.class);
     }
 
-    public ProductDTO mapProductEntityDTO(Product productObj)
-    {
-        return new ProductDTO(productObj.getProductID(),
-                productObj.getImageUrl(),
-                productObj.getProductName(),
-                productObj.getDescription(),
-                productObj.getPrice(),
-                productObj.getStockQuantity(),
-                productObj.getCategory().getName());
+
+    @Override
+    public ProductDTO createProduct(ProductDTO productDTO) {
+        String url = PRODUCT_SERVICE_URL;
+        ProductDTO createdProduct = restTemplate.postForObject(url, productDTO, ProductDTO.class);
+        log.info("Created product with id: {}", createdProduct.getProductID());
+        return createdProduct;
     }
 
-    public ProductDTO createProduct(ProductDTO productdto) {
-        Product productEntity=getProductDetails(productdto);
-        Product productObj=productRepository.save(productEntity);
-        log.info("created a Product with the id:{}",productObj.getProductID());
-        return mapProductEntityDTO(productObj) ;
-    }
-
-    private Product getProductDetails(ProductDTO productDTO){
-        Product productObj=Product.builder().productName(productDTO.getProductName())
-                .description(productDTO.getDescription())
-                .imageUrl(productDTO.getImageUrl())
-                .price(productDTO.getPrice())
-                .stockQuantity(productDTO.getStockQuantity()).build();
-        Category categoryEntity=null;
-        if((productDTO.getCategoryName()!=null)){
-            categoryEntity=findByCategoryEntityByName(productDTO.getCategoryName());
-
-        }
-        productObj.setCategory(categoryEntity);
-        return productObj;
-    }
-
-    public Category findByCategoryEntityByName(String name) {
-        Optional<Category> categoryOptional = categoryRepository.findByName(name);
-
-        return categoryOptional
-                .orElseThrow(() -> new RuntimeException("Category Not Found by name: " + name));
-    }
 
     @Override
     public Page<ProductDTO> getProduct(Pageable pageable) {
-        Page<Product> productPage=productRepository.findAll(pageable);
-        return productPage.map(this::mapProductEntityDTO);
+        String url = PRODUCT_SERVICE_URL + "?page=" + pageable.getPageNumber() + "&size=" + pageable.getPageSize();
+
+        ResponseEntity<PageResponse<ProductDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<PageResponse<ProductDTO>>() {}
+        );
+
+        PageResponse<ProductDTO> pageResponse = response.getBody();
+        return new PageImpl<>(pageResponse.getContent(), pageable, pageResponse.getTotalElements());
     }
+
+
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Product productEntity=productRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("Product " +
-                        "Not Found"));
-        Category category=null;
-        if(productDTO.getProductName()!=null){
-            productEntity.setProductName(productDTO.getProductName());
-        }
-        if(productDTO.getImageUrl()!=null){
-            productEntity.setImageUrl(productDTO.getImageUrl());
-        }
-        if(productDTO.getDescription()!=null){
-            productEntity.setDescription(productDTO.getDescription());
-        }
-        if(productDTO.getStockQuantity()!=null){
-            productEntity.setStockQuantity(productDTO.getStockQuantity());
-        }
-        if(productDTO.getPrice()!=null){
-            productEntity.setPrice(productDTO.getPrice());
-        }
-        if(productDTO.getCategoryName()!=null){
-            category=findByCategoryEntityByName(productDTO.getCategoryName());
-            productEntity.setCategory(category);
-        }
-        Product perProduct=productRepository.save(productEntity);
-        return mapProductEntityDTO(perProduct);
-    }
-    @Override
-    public void deleteProduct(Long id) {
-        Product product=productRepository.findById(id).orElseThrow(()->new RuntimeException("Not found"));
-        log.info("prouduct with the id: {} deleted",product.getProductID());
-        productRepository.delete(product);
+        String url = PRODUCT_SERVICE_URL + "/" + id;
+        restTemplate.put(url, productDTO);
+        return findById(id);
     }
 
     @Override
+    public void deleteProduct(Long id) {
+        String url = PRODUCT_SERVICE_URL + "/" + id;
+        restTemplate.delete(url);
+        log.info("Deleted product with id: {}", id);
+    }
+
+
+    @Override
     public Long totalProduct() {
-        return productRepository.count();
+        String url = PRODUCT_SERVICE_URL + "/totalproducts";
+        Long totalProducts = restTemplate.getForObject(url, Long.class);
+        log.info("Fetched total products from ProductService: {}", totalProducts);
+        return totalProducts;
     }
 
     @Override
     public Page<OrderDTO> getOrders(Pageable pageable) {
-        Page<Order> orderPage = orderRepository.findAll(pageable);
-        return orderPage.map(this::mapOrderEntityDTO);
-    }
+        String url = ORDER_SERVICE_URL + "?page=" + pageable.getPageNumber() + "&size=" + pageable.getPageSize();
 
+        ResponseEntity<PageResponse<OrderDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<PageResponse<OrderDTO>>() {}
+        );
 
-    public OrderDTO mapOrderEntityDTO(Order orderObj) {
-        List<OrderItemDTO> itemDTOs = orderObj.getOrderItems().stream()
-                .map(item -> OrderItemDTO.builder()
-                        .orderItemId(item.getOrderItemId())
-                        .productId(item.getProductId())
-                        .quantity(item.getQuantity())
-                        .unitPrice(item.getUnitPrice())
-                        .totalPrice(item.getTotalPrice())
-                        .size(item.getSize())
-                        .build())
-                .toList();
-
-        return OrderDTO.builder()
-                .orderId(orderObj.getOrderId())
-                .userId(orderObj.getUserId())
-                .shippingAddress(orderObj.getShippingAddress())
-                .orderStatus(orderObj.getOrderStatus())
-                .totalPrice(orderObj.getTotalPrice())
-                .orderDate(orderObj.getOrderDate())
-                .orderItems(itemDTOs)
-                .build();
+        PageResponse<OrderDTO> pageResponse = response.getBody();
+        return new PageImpl<>(pageResponse.getContent(), pageable, pageResponse.getTotalElements());
     }
 
     @Override
-    public List<UserDetailsDTO> getAllUsers() {
-        return userRepository.findAllByRoleName(RoleType.ROLE_CUSTOMER).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-    private UserDetailsDTO mapToDto(User u) {
-        return UserDetailsDTO.builder()
-                .id(u.getId())
-                .username(u.getUsername())
-                .email(u.getEmail())
-                .build();
-    }
-    @Override
-    @Transactional
-    public void deleteUserById(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User with id " + id + " not found");
-        }
-        userRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional
     public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        String url = ORDER_SERVICE_URL + "/" + orderId;
+        OrderDTO request = new OrderDTO();
+        request.setOrderStatus(newStatus);
 
-        order.setOrderStatus(newStatus);
-        Order updatedOrder = orderRepository.save(order);
-
-        List<OrderItemDTO> itemDTOs = updatedOrder.getOrderItems().stream()
-                .map(item -> OrderItemDTO.builder()
-                        .orderItemId(item.getOrderItemId())
-                        .productId(item.getProductId())
-                        .quantity(item.getQuantity())
-                        .unitPrice(item.getUnitPrice())
-                        .totalPrice(item.getTotalPrice())
-                        .size(item.getSize())
-                        .build())
-                .toList();
-
-        return OrderDTO.builder()
-                .orderId(updatedOrder.getOrderId())
-                .userId(updatedOrder.getUserId())
-                .shippingAddress(updatedOrder.getShippingAddress())
-                .orderStatus(updatedOrder.getOrderStatus())
-                .totalPrice(updatedOrder.getTotalPrice())
-                .orderDate(updatedOrder.getOrderDate())
-                .orderItems(itemDTOs)
-                .build();
+        ResponseEntity<OrderDTO> response = restTemplate.exchange(
+                url,
+                HttpMethod.PUT,
+                new HttpEntity<>(request),
+                OrderDTO.class
+        );
+        return response.getBody();
     }
 
-    @Override
-    public UserDetailsDTO findUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return UserDetailsDTO.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .build();
+    @Override
+    public Long totalOrders() {
+        String url = ORDER_SERVICE_URL + "/totalorders";
+        return restTemplate.getForObject(url, Long.class);
     }
 
     @Override
     public Long calculateTotalRevenue() {
-        List<Order> allOrders = orderRepository.findAll();
-
-        BigDecimal totalRevenue = allOrders.stream()
-                .map(Order::getTotalPrice)
-                .filter(price -> price != null)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return totalRevenue.longValue();
+        String url = ORDER_SERVICE_URL + "/totalrevenue";
+        return restTemplate.getForObject(url, Long.class);
+    }
+    @Override
+    public List<UserDetailsDTO> getAllUsers() {
+        String url = USER_SERVICE_URL;
+        ResponseEntity<List<UserDetailsDTO>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<UserDetailsDTO>>() {}
+        );
+        return response.getBody();
     }
 
     @Override
-    public Long totalOrders() {
-        return orderRepository.count();
+    @Transactional
+    public void deleteUserById(Long id) {
+        String url = USER_SERVICE_URL + "/" + id;
+        restTemplate.delete(url);
+        log.info("Deleted user with id: {}", id);
+    }
+
+    @Override
+    public UserDetailsDTO findUserById(Long id) {
+        String url = USER_SERVICE_URL + "/admin/" + id;
+        return restTemplate.getForObject(url, UserDetailsDTO.class);
     }
 
     @Override
     public Long TotalUsers() {
-        return userRepository.countByRoleName(RoleType.ROLE_CUSTOMER);
+        String url = USER_SERVICE_URL + "/totalusers";
+        Long totalUsers = restTemplate.getForObject(url, Long.class);
+        log.info("Fetched total users from UserService: {}", totalUsers);
+        return totalUsers;
     }
+
+
+//    @Override
+//    public List<UserDetailsDTO> getAllUsers() {
+//        return userRepository.findAllByRoleName(RoleType.ROLE_CUSTOMER).stream()
+//                .map(this::mapToDto)
+//                .collect(Collectors.toList());
+//    }
+//    private UserDetailsDTO mapToDto(User u) {
+//        return UserDetailsDTO.builder()
+//                .id(u.getId())
+//                .username(u.getUsername())
+//                .email(u.getEmail())
+//                .build();
+//    }
+//    @Override
+//    @Transactional
+//    public void deleteUserById(Long id) {
+//        if (!userRepository.existsById(id)) {
+//            throw new IllegalArgumentException("User with id " + id + " not found");
+//        }
+//        userRepository.deleteById(id);
+//    }
+//
+//    @Override
+//    public UserDetailsDTO findUserById(Long id) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        return UserDetailsDTO.builder()
+//                .id(user.getId())
+//                .username(user.getUsername())
+//                .email(user.getEmail())
+//                .build();
+//    }
+//
+//
+//    @Override
+//    public Long TotalUsers() {
+//        return userRepository.countByRoleName(RoleType.ROLE_CUSTOMER);
+//    }
 
 
 

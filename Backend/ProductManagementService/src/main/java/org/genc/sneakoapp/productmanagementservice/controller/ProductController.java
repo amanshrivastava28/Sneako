@@ -68,5 +68,11 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/totalproducts")
+    public ResponseEntity<Long> totalProducts() {
+        Long totalProducts = productService.totalProduct();
+        return new ResponseEntity<>(totalProducts, HttpStatus.OK);
+    }
+
 
 }

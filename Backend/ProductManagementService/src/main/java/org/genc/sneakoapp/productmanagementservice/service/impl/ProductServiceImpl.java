@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Long totalProduct() {
-        return productRepository.count();
+            return productRepository.count();
     }
 
 
@@ -126,5 +126,8 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedBy("FRONTEND");
         productRepository.save(product);
     }
+
+
+
 
 }

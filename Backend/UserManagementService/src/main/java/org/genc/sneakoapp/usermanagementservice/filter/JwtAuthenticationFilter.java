@@ -35,7 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // NOTE: BASE_SERVICE_PATH should be accessible or hardcoded here if needed
     private static final List<String> SKIPPED_PATHS = List.of(
             "/api/v1/user-service/login",
-            "/api/v1/user-service/register", // Assuming this is the registration path
+            "/api/v1/user-service/register",
+            "/api/v1/user-service/users",// Assuming this is the registration path
             "/actuator",
             "/v3/api-docs",
             "/swagger-ui"

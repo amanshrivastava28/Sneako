@@ -10,9 +10,11 @@ public interface UserDetailsService {
    public List<UserDetailsDTO> getAllUsers();
     public void deleteUserById(Long id);
     public  UserDetailsDTO findById(Long id);
-    public  Long TotalUsers();
-    public UserDTO findUserById(Long id);
+    public  Long totalUsers();
+    public UserDTO getUserById(Long id);
     public UserDTO updateUser(Long id, UserDTO userDTO);
+    public  UserDetailsDTO findUserById(Long id);
+
 
 
 }
