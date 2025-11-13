@@ -59,13 +59,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Specific public endpoints for auth
                         .requestMatchers(HttpMethod.POST, BASE_SERVICE_PATH + "/login/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, BASE_SERVICE_PATH + "/register/**").permitAll() // Assuming registration is here
+                        .requestMatchers(HttpMethod.POST, BASE_SERVICE_PATH + "/register/**").permitAll()
+                        .requestMatchers( BASE_SERVICE_PATH + "/users/**").permitAll()
+
 
                         // Other public service endpoints
                         .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Restrict access for authenticated requests
-                        .requestMatchers(BASE_SERVICE_PATH+"/users/**").hasAnyRole("CUSTOMER", "ADMIN")
+//                        .requestMatchers(BASE_SERVICE_PATH+"/users/**").hasAnyRole("CUSTOMER", "ADMIN")
 
 
                         .requestMatchers(BASE_SERVICE_PATH+"/roles/**").hasRole("ADMIN")

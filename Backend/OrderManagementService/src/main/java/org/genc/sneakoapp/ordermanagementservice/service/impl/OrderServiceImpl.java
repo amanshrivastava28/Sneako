@@ -197,6 +197,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Long calculateTotalRevenu() {
+        List<Order> allOrders = orderRepository.findAll();
+
+        BigDecimal totalRevenue = allOrders.stream()
+                .map(Order::getTotalPrice)
+                .filter(price -> price != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalRevenue.longValue();
+    }
+
+    @Override
     public List<OrderDTO> findOrdersByUserId(Long userId) {
         List<Order> orders = orderRepository.findByUserId(userId);
         return orders.stream()

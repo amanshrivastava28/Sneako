@@ -58,12 +58,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public Long TotalUsers() {
+    public Long totalUsers() {
         return userRepository.countByRoleName(RoleType.ROLE_CUSTOMER);
     }
 
     @Override
-    public UserDTO findUserById(Long id) {
+    public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -107,6 +107,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .build();
 
 
+    }
+    @Override
+    public UserDetailsDTO findUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserDetailsDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 
 

@@ -72,6 +72,13 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserDetailsDTO> findUserById(@PathVariable Long id) {
+        UserDetailsDTO user = adminService.findUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
@@ -85,12 +92,6 @@ public class AdminController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<UserDetailsDTO> getUserById(@PathVariable Long id) {
-        UserDetailsDTO user = adminService.findUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
     @GetMapping("/analytics")
     public  ResponseEntity<AnalyticsDTO>  calculateAnayltics(){
         Long totalRevenue=adminService.calculateTotalRevenue();
@@ -101,8 +102,6 @@ public class AdminController {
         AnalyticsDTO analyticsDTO = new AnalyticsDTO(totalRevenue, totalOrders,totalusers,totalProducts);
 
         return ResponseEntity.ok(analyticsDTO);
-
-
 
     }
 

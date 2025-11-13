@@ -13,7 +13,9 @@ public interface OrderService {
   public OrderDTO updateOrderStatus(Long orderId, String newStatus);
   public Long calculateTotalRevenue();
   public Long totalOrders();
+    public Long calculateTotalRevenu();
   List<OrderDTO> findOrdersByUserId(Long userId);
+
 
 
 

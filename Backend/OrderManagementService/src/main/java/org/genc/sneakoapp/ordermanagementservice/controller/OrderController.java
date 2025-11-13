@@ -43,6 +43,21 @@ public class OrderController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
+    @GetMapping("/totalorders")
+    public ResponseEntity<Long> totalOrders() {
+        Long totalOrders = orderService.totalOrders();
+        return new ResponseEntity<>(totalOrders, HttpStatus.OK);
+    }
 
+    @GetMapping("/totalrevenue")
+    public ResponseEntity<Long> totalRevenue() {
+        Long calculatedTotalRevenue = orderService.calculateTotalRevenue();
+        return new ResponseEntity<>(calculatedTotalRevenue, HttpStatus.OK);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long id, @RequestBody OrderDTO updatedOrder) {
+        OrderDTO updated = orderService.updateOrderStatus(id, updatedOrder.getOrderStatus());
+        return new ResponseEntity<>(updated, HttpStatus.OK);
+    }
 
 }
