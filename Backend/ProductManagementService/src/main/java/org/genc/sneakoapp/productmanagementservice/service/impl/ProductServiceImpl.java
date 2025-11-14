@@ -128,7 +128,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product.setStockQuantity(currentStock - quantity);
-        product.setUpdatedBy("FRONTEND");
         productRepository.save(product);
     }
 }

@@ -72,6 +72,8 @@ const token = user.jwt;
         phone: formData.phone,
         email: formData.email,
         password: formData.password || null,
+         address: formData.address
+
       };
 
       const response = await axios.put(

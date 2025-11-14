@@ -69,16 +69,22 @@ public class AdminControllerTest {
     void testCreateProduct_returnsCreatedProduct() throws Exception {
         // Arrange
         ProductDTO input = ProductDTO.builder()
+                .imageUrl("http://example.com/image.png")   // ✅ required
                 .productName("New Product")
                 .description("new desc")
                 .price(new BigDecimal("5.00"))
+                .stockQuantity(10L)
+                .categoryName("Shoes")
                 .build();
 
         ProductDTO saved = ProductDTO.builder()
                 .productID(2L)
+                .imageUrl("http://example.com/image.png")   // ✅ match input
                 .productName("New Product")
                 .description("new desc")
                 .price(new BigDecimal("5.00"))
+                .stockQuantity(10L)
+                .categoryName("Shoes")
                 .build();
 
         when(adminService.createProduct(any(ProductDTO.class))).thenReturn(saved);
