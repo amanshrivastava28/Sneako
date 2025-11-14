@@ -177,46 +177,4 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-//    @Override
-//    public List<UserDetailsDTO> getAllUsers() {
-//        return userRepository.findAllByRoleName(RoleType.ROLE_CUSTOMER).stream()
-//                .map(this::mapToDto)
-//                .collect(Collectors.toList());
-//    }
-//    private UserDetailsDTO mapToDto(User u) {
-//        return UserDetailsDTO.builder()
-//                .id(u.getId())
-//                .username(u.getUsername())
-//                .email(u.getEmail())
-//                .build();
-//    }
-//    @Override
-//    @Transactional
-//    public void deleteUserById(Long id) {
-//        if (!userRepository.existsById(id)) {
-//            throw new IllegalArgumentException("User with id " + id + " not found");
-//        }
-//        userRepository.deleteById(id);
-//    }
-//
-//    @Override
-//    public UserDetailsDTO findUserById(Long id) {
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        return UserDetailsDTO.builder()
-//                .id(user.getId())
-//                .username(user.getUsername())
-//                .email(user.getEmail())
-//                .build();
-//    }
-//
-//
-//    @Override
-//    public Long TotalUsers() {
-//        return userRepository.countByRoleName(RoleType.ROLE_CUSTOMER);
-//    }
-
-
-
 }
