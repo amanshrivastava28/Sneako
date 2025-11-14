@@ -33,6 +33,6 @@ public class ProductDTO {
     private Long stockQuantity;
 
     @NotNull
-    private  String CategoryName;
+    private  String categoryName;
 
 }

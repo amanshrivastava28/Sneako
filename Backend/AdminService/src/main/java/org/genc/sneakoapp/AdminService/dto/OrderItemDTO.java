@@ -19,8 +19,6 @@ public class OrderItemDTO {
     @Nullable
     private Long orderId;
 
-
-
     private Long productId;
     private Long quantity;
     private BigDecimal unitPrice;
