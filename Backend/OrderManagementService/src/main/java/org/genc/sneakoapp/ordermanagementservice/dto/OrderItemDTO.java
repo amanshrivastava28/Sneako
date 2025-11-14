@@ -1,6 +1,7 @@
 package org.genc.sneakoapp.ordermanagementservice.dto;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -17,10 +18,13 @@ public class OrderItemDTO {
     private Long orderId;
 
 
-
+    @NotNull
     private Long productId;
+    @NotNull
     private Long quantity;
+    @NotNull
     private BigDecimal unitPrice;
+
     private BigDecimal totalPrice;
     private Long size;
 }

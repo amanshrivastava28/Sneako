@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.genc.sneakoapp.cartmanagementservice.dto.CartItemDTO;
 import org.genc.sneakoapp.cartmanagementservice.entity.Cart;
 import org.genc.sneakoapp.cartmanagementservice.entity.CartItem;
+import org.genc.sneakoapp.cartmanagementservice.exception.CartItemNotFoundException;
+import org.genc.sneakoapp.cartmanagementservice.exception.InvalidCartItemException;
 import org.genc.sneakoapp.cartmanagementservice.repo.CartItemRepository;
 import org.genc.sneakoapp.cartmanagementservice.repo.CartRepository;
 import org.genc.sneakoapp.cartmanagementservice.service.api.CartItemService;
@@ -44,7 +46,6 @@ public class CartItemServiceImpl implements CartItemService {
                 cartItemDTO.getSize()
         );
 
-
         CartItem finalItem;
 
         if (!existingItems.isEmpty()) {
@@ -72,7 +73,6 @@ public class CartItemServiceImpl implements CartItemService {
             cart.getCartItems().add(finalItem);
         }
 
-
         // Recalculate cart totals
         BigDecimal cartTotalPrice = cart.getCartItems().stream()
                 .map(CartItem::getTotalPrice)
@@ -80,7 +80,6 @@ public class CartItemServiceImpl implements CartItemService {
         int totalItems = cart.getCartItems().stream()
                 .mapToInt(item -> item.getQuantity().intValue())
                 .sum();
-
 
         cart.setTotalPrice(cartTotalPrice);
         cart.setTotalItem(totalItems);
@@ -100,16 +99,16 @@ public class CartItemServiceImpl implements CartItemService {
     @Transactional
     public CartItemDTO updateCartItemQuantity(CartItemDTO cartItemDTO) {
         if (cartItemDTO.getProductId() == null || cartItemDTO.getCartItemId() == null) {
-            throw new IllegalArgumentException("Product ID and Cart Item ID are required.");
+            throw new InvalidCartItemException("Product ID and Cart Item ID are required.");
         }
         if (cartItemDTO.getQuantity() <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero.");
+            throw new InvalidCartItemException("Quantity must be greater than zero.");
         }
 
         CartItem cartItem = cartItemRepository.findByCartItemIdAndProductId(
                 cartItemDTO.getCartItemId(),
                 cartItemDTO.getProductId()
-        ).orElseThrow(() -> new RuntimeException(
+        ).orElseThrow(() -> new CartItemNotFoundException(
                 "CartItem not found for CartItem ID: " + cartItemDTO.getCartItemId() +
                         " and Product ID: " + cartItemDTO.getProductId()));
 
@@ -126,7 +125,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public CartItemDTO findCartItemById(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem not found"));
+                .orElseThrow(() -> new CartItemNotFoundException("CartItem not found with ID: " + id));
 
         return CartItemDTO.builder()
                 .cartItemId(cartItem.getCartItemId())
@@ -142,7 +141,7 @@ public class CartItemServiceImpl implements CartItemService {
     @Transactional
     public void deleteCartItem(Long id) {
         CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("CartItem not found"));
+                .orElseThrow(() -> new CartItemNotFoundException("CartItem not found with ID: " + id));
 
         Cart cart = cartItem.getCart();
         cartItemRepository.delete(cartItem);
@@ -154,7 +153,6 @@ public class CartItemServiceImpl implements CartItemService {
         int totalItems = cart.getCartItems().stream()
                 .mapToInt(item -> item.getQuantity().intValue())
                 .sum();
-
 
         cart.setTotalPrice(cartTotalPrice);
         cart.setTotalItem(totalItems);

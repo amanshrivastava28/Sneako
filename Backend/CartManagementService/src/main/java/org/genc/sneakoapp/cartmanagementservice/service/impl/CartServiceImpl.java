@@ -7,6 +7,7 @@ import org.genc.sneakoapp.cartmanagementservice.dto.CartDTO;
 import org.genc.sneakoapp.cartmanagementservice.dto.CartItemDTO;
 import org.genc.sneakoapp.cartmanagementservice.entity.Cart;
 import org.genc.sneakoapp.cartmanagementservice.entity.CartItem;
+import org.genc.sneakoapp.cartmanagementservice.exception.CartNotFoundException;
 import org.genc.sneakoapp.cartmanagementservice.repo.CartRepository;
 import org.genc.sneakoapp.cartmanagementservice.service.api.CartService;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class CartServiceImpl implements CartService {
                         .unitPrice(item.getUnitPrice().doubleValue())
                         .quantity(item.getQuantity())
                         .totalPrice(item.getTotalPrice().doubleValue())
-                        .size(item.getSize()) // Added size mapping
+                        .size(item.getSize())
                         .build())
                 .collect(Collectors.toSet());
 
@@ -58,10 +59,10 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartDTO recalculateCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new CartNotFoundException("Cart not found with ID: " + cartId));
 
         BigDecimal totalPrice = cart.getCartItems().stream()
-                .map(CartItem::getTotalPrice) // ✅ Already BigDecimal
+                .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int totalItems = cart.getCartItems().size();

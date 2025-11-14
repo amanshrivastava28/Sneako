@@ -17,13 +17,18 @@ import java.util.List;
 public class OrderDTO {
     @Nullable
     private Long orderId;
+
     private Long userId;
+
     private String shippingAddress;
 
     @Nullable
     private BigDecimal totalPrice;
+
     private String orderStatus;
+
     private LocalDateTime orderDate;
+
     private List<OrderItemDTO> orderItems;
 
     public OrderDTO(Long orderId, Long userId, String shippingAddress, BigDecimal totalPrice, String orderStatus, LocalDateTime orderDate) {

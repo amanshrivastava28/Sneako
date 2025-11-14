@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.genc.sneakoapp.ordermanagementservice.dto.OrderItemDTO;
 import org.genc.sneakoapp.ordermanagementservice.entity.Order;
 import org.genc.sneakoapp.ordermanagementservice.entity.OrderItem;
+import org.genc.sneakoapp.ordermanagementservice.exception.OrderNotFoundException;
+import org.genc.sneakoapp.ordermanagementservice.exception.OrderItemNotFoundException;
 import org.genc.sneakoapp.ordermanagementservice.repo.OrderItemRepository;
 import org.genc.sneakoapp.ordermanagementservice.repo.OrderRepository;
 import org.genc.sneakoapp.ordermanagementservice.service.api.OrderItemService;
@@ -26,7 +28,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     public OrderItemDTO createOrderItem(OrderItemDTO dto) {
         Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + dto.getOrderId()));
 
         BigDecimal total = dto.getUnitPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
 
@@ -40,7 +42,6 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .build();
 
         orderItemRepository.save(orderItem);
-
         updateOrderTotal(order);
 
         return convertToDTO(orderItem);
@@ -50,7 +51,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     public OrderItemDTO updateOrderItem(Long id, OrderItemDTO dto) {
         OrderItem item = orderItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order item not found"));
+                .orElseThrow(() -> new OrderItemNotFoundException("Order item not found with ID: " + id));
 
         if (dto.getQuantity() != null) item.setQuantity(dto.getQuantity());
         if (dto.getUnitPrice() != null) item.setUnitPrice(dto.getUnitPrice());
@@ -69,7 +70,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     public void deleteOrderItem(Long id) {
         OrderItem item = orderItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order item not found"));
+                .orElseThrow(() -> new OrderItemNotFoundException("Order item not found with ID: " + id));
 
         Order order = item.getOrder();
         orderItemRepository.delete(item);
@@ -80,7 +81,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItemDTO findOrderItemById(Long id) {
         OrderItem item = orderItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order item not found"));
+                .orElseThrow(() -> new OrderItemNotFoundException("Order item not found with ID: " + id));
         return convertToDTO(item);
     }
 
@@ -90,7 +91,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         return items.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    //  recalculate order total
+    // recalculate order total
     private void updateOrderTotal(Order order) {
         BigDecimal orderTotal = orderItemRepository.findByOrderOrderId(order.getOrderId())
                 .stream()

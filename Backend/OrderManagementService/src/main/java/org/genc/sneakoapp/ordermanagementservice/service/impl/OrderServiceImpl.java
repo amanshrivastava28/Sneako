@@ -7,6 +7,8 @@ import org.genc.sneakoapp.ordermanagementservice.dto.OrderDTO;
 import org.genc.sneakoapp.ordermanagementservice.dto.OrderItemDTO;
 import org.genc.sneakoapp.ordermanagementservice.entity.Order;
 import org.genc.sneakoapp.ordermanagementservice.entity.OrderItem;
+import org.genc.sneakoapp.ordermanagementservice.exception.OrderNotFoundException;
+import org.genc.sneakoapp.ordermanagementservice.exception.InvalidOrderException;
 import org.genc.sneakoapp.ordermanagementservice.repo.OrderItemRepository;
 import org.genc.sneakoapp.ordermanagementservice.repo.OrderRepository;
 import org.genc.sneakoapp.ordermanagementservice.service.api.OrderService;
@@ -39,9 +41,9 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        //  Validate and Save OrderItems
+        // Validate and Save OrderItems
         if (orderDTO.getOrderItems() == null || orderDTO.getOrderItems().isEmpty()) {
-            throw new RuntimeException("Order must contain at least one item.");
+            throw new InvalidOrderException("Order must contain at least one item.");
         }
 
         List<OrderItem> orderItems = orderDTO.getOrderItems().stream()
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderItemRepository.saveAll(orderItems);
 
-        //  Recalculate order total
+        // Recalculate order total
         BigDecimal orderTotal = orderItems.stream()
                 .map(OrderItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -65,10 +67,10 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setTotalPrice(orderTotal);
         orderRepository.save(savedOrder);
 
-        //  Reload items to get generated IDs
+        // Reload items to get generated IDs
         List<OrderItem> savedItems = orderItemRepository.findByOrderOrderId(savedOrder.getOrderId());
 
-        //  Construct DTO
+        // Construct DTO
         List<OrderItemDTO> itemDTOs = savedItems.stream()
                 .map(item -> OrderItemDTO.builder()
                         .orderItemId(item.getOrderItemId())
@@ -95,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO findOrderById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + id));
 
         List<OrderItemDTO> itemDTOs = order.getOrderItems().stream()
                 .map(item -> OrderItemDTO.builder()
@@ -152,7 +154,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with ID: " + orderId));
 
         order.setOrderStatus(newStatus);
         Order updatedOrder = orderRepository.save(order);
@@ -215,9 +217,4 @@ public class OrderServiceImpl implements OrderService {
                 .map(this::mapProductEntityDTO)
                 .collect(Collectors.toList());
     }
-
-
-
-
-
 }

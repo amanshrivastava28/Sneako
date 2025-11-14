@@ -1,6 +1,7 @@
 package org.genc.sneakoapp.cartmanagementservice.dto;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +14,22 @@ import lombok.NoArgsConstructor;
 public class CartItemDTO {
     @Nullable
     private Long cartItemId;
+
+    @NotNull
     private Long userId;
+
+    @NotNull
     private Long productId;
+
+    @NotNull
     private double unitPrice;
+
+    @NotNull
     private Long quantity;
 
     @Nullable
     private double totalPrice;
-    private Integer size; // Added size field
+
+    @NotNull
+    private Integer size;
 }
