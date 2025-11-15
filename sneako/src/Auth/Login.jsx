@@ -26,7 +26,6 @@ function Login() {
       );
 
       const data = response.data;
-      console.log(data, "login response data");
 
       if (data.jwt) {
         localStorage.setItem("user", JSON.stringify({
@@ -41,10 +40,8 @@ function Login() {
         }));
 
         const backendRole = data.role?.toUpperCase();
-        console.log(backendRole);
 
         const selected = selectedRole?.toUpperCase();
-        console.log(selected);
 
         if (backendRole !== selected) {
           setError("Selected role does not match your account role.");
@@ -52,7 +49,6 @@ function Login() {
         }
 
         if (backendRole === "ROLE_ADMIN") {
-          console.log("navigating to the admin")
           navigate("/admin");
         } else {
           navigate("/home");

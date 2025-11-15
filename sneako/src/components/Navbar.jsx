@@ -55,7 +55,6 @@ useEffect(() => {
   }
 
   const storedUser = localStorage.getItem("user");
-  console.log("Navbar - storedUser:", storedUser);
   if (storedUser) {
     const parsedUser = JSON.parse(storedUser);
     setUser(parsedUser);
@@ -70,7 +69,6 @@ useEffect(() => {
 useEffect(() => {
   if (!isUserReady || !user?.jwt) return;
 
-  console.log("Fetching products with token:", user.jwt); 
 
   async function fetchProducts() {
     try {

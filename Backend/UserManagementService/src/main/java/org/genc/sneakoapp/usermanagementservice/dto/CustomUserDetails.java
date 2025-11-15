@@ -18,7 +18,6 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
     private final Long id;
     private final Set<GrantedAuthority> authorities;
-    // Additional fields
     private final String email;
     private final String address;
     private String phone;
