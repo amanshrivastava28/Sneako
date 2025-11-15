@@ -20,6 +20,18 @@ function Signup() {
     e.preventDefault();
     setError("");
 
+    // ✅ Password length validation
+    if (password.length <= 5) {
+      setError("Password must be longer than 5 characters.");
+      return;
+    }
+
+    // ✅ Phone number validation (must be exactly 10 digits)
+    if (!/^\d{10}$/.test(phone)) {
+      setError("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -47,11 +59,10 @@ function Signup() {
       localStorage.setItem("user", JSON.stringify(response.data));
       setError("");
       setGreet(true);
-    setTimeout(() => {
-  setGreet(false);
-  navigate("/login");
-}, 1500);
-
+      setTimeout(() => {
+        setGreet(false);
+        navigate("/login");
+      }, 1500);
     } catch (err) {
       console.log("Signup error:", err.response);
       setError(
@@ -68,19 +79,12 @@ function Signup() {
         </div>
       )}
 
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
+      <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
         <source src="/videos/vid.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-
       <Navbar />
 
       <div className="relative flex items-center justify-center min-h-screen z-10 px-2">
@@ -93,6 +97,7 @@ function Signup() {
 
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow h-full justify-between">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 flex-grow">
+              {/* Full Name */}
               <div>
                 <label className="block mb-1 font-medium">Full Name</label>
                 <input
@@ -104,6 +109,8 @@ function Signup() {
                   required
                 />
               </div>
+
+              {/* Email */}
               <div>
                 <label className="block mb-1 font-medium">Email</label>
                 <input
@@ -115,6 +122,8 @@ function Signup() {
                   required
                 />
               </div>
+
+              {/* Address */}
               <div>
                 <label className="block mb-1 font-medium">Address</label>
                 <input
@@ -126,17 +135,21 @@ function Signup() {
                   required
                 />
               </div>
+
+              {/* Phone Number */}
               <div>
                 <label className="block mb-1 font-medium">Phone Number</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter your phone number"
+                  placeholder="Enter 10-digit phone number"
                   className="w-full border border-gray-600 bg-transparent rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder-gray-400"
                   required
                 />
               </div>
+
+              {/* Password */}
               <div>
                 <label className="block mb-1 font-medium">Password</label>
                 <input
@@ -148,6 +161,8 @@ function Signup() {
                   required
                 />
               </div>
+
+              {/* Confirm Password */}
               <div>
                 <label className="block mb-1 font-medium">Confirm Password</label>
                 <input
@@ -159,6 +174,8 @@ function Signup() {
                   required
                 />
               </div>
+
+              {/* Role */}
               <div className="md:col-span-2">
                 <label className="block mb-1 font-medium">Select Role</label>
                 <select

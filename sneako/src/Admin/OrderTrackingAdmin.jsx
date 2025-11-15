@@ -129,7 +129,7 @@ function OrderTrackingAdmin() {
                         onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
                         className={`p-1 border rounded-md text-sm font-medium ${getStatusStyles(order.orderStatus)}`}
                       >
-                        {['Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(status => (
+                        {['Confirmed', 'Processing', 'Shipped', 'Delivered'].map(status => (
                           <option key={status} value={status}>{status}</option>
                         ))}
                       </select>

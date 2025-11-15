@@ -16,10 +16,11 @@ import java.util.Set;
 public class CartDTO {
     @Nullable
     private Long id;
-    @NotNull
+
+    @NotNull(message = "enter the user id")
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "least one cart item should be there")
     private Set<CartItemDTO> cartItems;
 
 

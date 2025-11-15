@@ -15,21 +15,21 @@ public class CartItemDTO {
     @Nullable
     private Long cartItemId;
 
-    @NotNull
+    @NotNull(message = "Enter the valid user id")
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "Enter the  valid product id")
     private Long productId;
 
-    @NotNull
+    @NotNull(message = "unit price cant be empty")
     private double unitPrice;
 
-    @NotNull
+    @NotNull(message = "quantity should be least one")
     private Long quantity;
 
     @Nullable
     private double totalPrice;
 
-    @NotNull
+    @NotNull(message = "Enter the size")
     private Integer size;
 }
