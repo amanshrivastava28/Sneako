@@ -131,9 +131,16 @@ useEffect(() => {
   return (
     <nav className="fixed top-0 w-full flex items-center px-4 py-4 text-white z-20 bg-black" >
       <div className="flex-1 flex items-center justify-between">
-        <Link to={user ? "/home" : "/"}>
-          <h1 className="text-2xl font-bold">Sneako</h1>
-        </Link>
+        <Link to={
+  user
+    ? user.role === "ROLE_ADMIN" || user.role === "seller"
+      ? "/admin"
+      : "/home"
+    : "/"
+}>
+  <h1 className="text-2xl font-bold">Sneako</h1>
+</Link>
+
         {/* Hamburger for mobile */}
         <button
           className="md:hidden ml-2 focus:outline-none"
