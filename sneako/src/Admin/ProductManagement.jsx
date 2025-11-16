@@ -7,6 +7,8 @@ const ProductManagement = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);   
+  const [pageSize] = useState(10);                    
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -19,7 +21,6 @@ const ProductManagement = () => {
         },
       })
       .then((res) => {
-                
         const productsWithId = res.data.content.map((product) => ({
           id: product.productID,
           name: product.productName,
@@ -55,6 +56,11 @@ const ProductManagement = () => {
       setTimeout(() => setSuccessMessage(""), 3000);
     }
   };
+
+  const indexOfLastProduct = currentPage * pageSize;
+  const indexOfFirstProduct = indexOfLastProduct - pageSize;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(products.length / pageSize);
 
   return (
     <div className="p-2 sm:p-4 md:p-8 bg-gray-50 min-h-screen w-full overflow-x-hidden">
@@ -99,7 +105,7 @@ const ProductManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {products.map((product) => (
+              {currentProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50 transition duration-150">
                   <td className="px-2 sm:px-4 md:px-6 py-2 sm:py-4 whitespace-nowrap font-semibold text-gray-900">
                     {product.name}
@@ -133,6 +139,37 @@ const ProductManagement = () => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/*  Pagination Controls */}
+        <div className="flex justify-center items-center mt-6 space-x-2">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

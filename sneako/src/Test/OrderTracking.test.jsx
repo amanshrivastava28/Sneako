@@ -18,21 +18,26 @@ import OrderTracking from '../Pages/OrderTracking';
 
 test('renders Order Tracking heading', async () => {
   axios.get.mockImplementation((url) => {
-    if (url.includes('/orders/')) {
+    if (url.includes('/order-service/order/')) {
       return Promise.resolve({
         data: {
-          id: 1,
-          trackingNumber: 'ABC123',
+          orderId: 1,
           orderDate: new Date().toISOString(),
-          status: 'Processing',
-          products: [{ productId: 1, name: 'Test Shoe', quantity: 1, price: 1000 }],
+          orderStatus: 'Processing',
+          orderItems: [
+            { productId: 1, quantity: 1, unitPrice: 1000 }
+          ],
           totalPrice: 1000,
         }
       });
     }
-    if (url.includes('/products/')) {
+    if (url.includes('/product-service/product/')) {
       return Promise.resolve({
-        data: { id: 1, image: 'test.jpg', name: 'Test Shoe' }
+        data: {
+          productID: 1,
+          productName: 'Test Shoe',
+          imageUrl: 'test.jpg'
+        }
       });
     }
     return Promise.resolve({ data: {} });
@@ -43,5 +48,6 @@ test('renders Order Tracking heading', async () => {
       <OrderTracking />
     </MemoryRouter>
   );
+
   expect(await screen.findByText(/Order Tracking/i)).toBeInTheDocument();
 });
