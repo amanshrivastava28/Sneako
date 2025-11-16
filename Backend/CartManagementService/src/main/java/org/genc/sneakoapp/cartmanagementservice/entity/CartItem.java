@@ -36,7 +36,7 @@ public class CartItem {
 
     private BigDecimal totalPrice;
 
-    private Integer size; // Added size field
+    private Integer size;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -31,10 +31,10 @@ public class Cart {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private Set<CartItem> cartItems = new HashSet<>(); // ✅ Initialized to avoid null
+    private Set<CartItem> cartItems = new HashSet<>();
 
     @Column(precision = 10, scale = 2)
-    private BigDecimal totalPrice = BigDecimal.ZERO; // ✅ Use BigDecimal for money
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     private Integer totalItem = 0;
 

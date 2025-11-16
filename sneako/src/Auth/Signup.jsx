@@ -11,22 +11,22 @@ function Signup() {
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState("ROLE_CUSTOMER");
   const [error, setError] = useState("");
   const [greet, setGreet] = useState(false);
   const navigate = useNavigate();
+
+  // Default role always ROLE_CUSTOMER
+  const selectedRole = "ROLE_CUSTOMER";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // ✅ Password length validation
     if (password.length <= 5) {
       setError("Password must be longer than 5 characters.");
       return;
     }
 
-    // ✅ Phone number validation (must be exactly 10 digits)
     if (!/^\d{10}$/.test(phone)) {
       setError("Phone number must be exactly 10 digits.");
       return;
@@ -79,7 +79,13 @@ function Signup() {
         </div>
       )}
 
-      <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
         <source src="/videos/vid.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -87,16 +93,19 @@ function Signup() {
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
       <Navbar />
 
-      <div className="relative flex items-center justify-center min-h-screen z-10 px-2">
-        <div className="bg-black/40 backdrop-blur-md shadow-2xl rounded-2xl p-2 w-full max-w-[420px] md:max-w-[468px] min-h-[500px] text-white flex flex-col">
-          <h2 className="text-xl font-bold text-center mb-2">Sign Up</h2>
+      <div className="relative flex items-center justify-center min-h-screen z-10 px-4">
+        <div className="bg-black/40 backdrop-blur-md shadow-2xl rounded-2xl p-6 w-full max-w-[420px] md:max-w-[468px] min-h-[500px] text-white flex flex-col">
+          <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
 
           {error && (
-            <p className="text-red-400 text-center mb-2 font-medium">{error}</p>
+            <p className="text-red-400 text-center mb-4 font-medium">{error}</p>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col flex-grow h-full justify-between">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2 flex-grow">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col flex-grow h-full justify-between"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
               {/* Full Name */}
               <div>
                 <label className="block mb-1 font-medium">Full Name</label>
@@ -174,30 +183,17 @@ function Signup() {
                   required
                 />
               </div>
-
-              {/* Role */}
-              <div className="md:col-span-2">
-                <label className="block mb-1 font-medium">Select Role</label>
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="w-full border border-gray-600 bg-transparent rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-red-500 focus:outline-none"
-                >
-                  <option value="ROLE_CUSTOMER" className="text-black">Customer</option>
-                  <option value="ROLE_ADMIN" className="text-black">Seller</option>
-                </select>
-              </div>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-red-600 text-white font-semibold py-1.5 rounded-lg hover:bg-red-700 transition mt-2"
+              className="w-full bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition mt-6"
             >
               Sign Up
             </button>
           </form>
 
-          <p className="text-center text-gray-300 mt-3">
+          <p className="text-center text-gray-300 mt-4">
             Already have an account?{" "}
             <span
               onClick={() => navigate("/login")}
