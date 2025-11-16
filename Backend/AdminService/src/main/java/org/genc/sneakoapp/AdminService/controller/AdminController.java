@@ -41,8 +41,8 @@ public class AdminController {
     public ResponseEntity<Page<ProductDTO>> getProducts(@RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "10")int size){
         Pageable pageable= PageRequest.of(page, size);
-        Page<ProductDTO> ProductDTOPage=adminService.getProduct(pageable);
-        return  new ResponseEntity<>(ProductDTOPage, HttpStatus.OK);
+        Page<ProductDTO> productDTOPage=adminService.getProduct(pageable);
+        return  new ResponseEntity<>(productDTOPage, HttpStatus.OK);
     }
 
     @PutMapping("/product/{id}")
