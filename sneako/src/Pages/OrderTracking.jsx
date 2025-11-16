@@ -159,21 +159,32 @@ function OrderTracking() {
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center bg-black text-white p-6 rounded-lg my-10">
-                            <div>
-                                <p className="text-lg text-gray-300">Current Status</p>
-                                <p className={`text-3xl font-extrabold mt-1 transition-colors duration-500 ${orderStatus === 'Delivered' ? 'text-green-400' : 'text-white'}`}>
-                                    {orderStatus}
-                                </p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-lg text-gray-300">Estimated Delivery</p>
-                                <p className="text-3xl font-extrabold mt-1 text-yellow-400">
-                                    {orderStatus === 'Delivered' ? 'Delivered!' : estimatedDelivery}
-                                </p>
-                            </div>
-                        </div>
-
+<div className="flex justify-between items-center bg-black text-white p-6 rounded-lg my-10">
+  <div>
+    <p className="text-lg text-gray-300">Current Status</p>
+    <p
+      className={`text-3xl font-extrabold mt-1 transition-colors duration-500 ${
+        orderStatus === 'Delivered'
+          ? 'text-green-400'
+          : orderStatus === 'Cancelled'
+          ? 'text-red-500'
+          : 'text-white'
+      }`}
+    >
+      {orderStatus === 'Cancelled' ? 'Order is Cancelled' : orderStatus}
+    </p>
+  </div>
+  <div className="text-right">
+    <p className="text-lg text-gray-300">Estimated Delivery</p>
+    <p className="text-3xl font-extrabold mt-1 text-yellow-400">
+      {orderStatus === 'Delivered'
+        ? 'Delivered!'
+        : orderStatus === 'Cancelled'
+        ? 'N/A'
+        : estimatedDelivery}
+    </p>
+  </div>
+</div>
                         <div className="text-left border-t pt-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary ({order.products.length} Items)</h2>
                             
