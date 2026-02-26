@@ -27,7 +27,3 @@ Built with **Spring Boot** on the backend and **React** on the frontend, Sneako 
 - **Spring Security** (authentication & authorization)
 - **Hibernate/JPA** (database ORM)
 - **MySQL/PostgreSQL** (database)
-
----
-
-## 📂 Project Structure
